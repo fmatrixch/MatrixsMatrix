@@ -36,7 +36,7 @@ class MT {
 		void newEdge_lr(int x,int y,string i) { 
 			is_on = true; 
 			(matrix[x][y].connection)++; 
-			matrix[x][y].weight += (i + " ");
+			matrix[x][y].weight = i;
 			edges++; 
 		}
 		void newEdge_bi(int x,int y,string i) {
