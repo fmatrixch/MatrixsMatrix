@@ -220,10 +220,10 @@ void interface(){
 	if (result & GRAPH) printf("This matrix represents a graph.\n"); 
 	enum GRAPH_STATUS_COMPLETE c = example.checkGraphStatusComplete();
 	enum GRAPH_STATUS_KONIGSBERG k = example.checkGraphStatusKonigsberg();
-	printf("This graph ");
+	printf("This matrix ");
 	if (c == COMPLETE) printf("is complete.\n");
 	else printf("is not complete.\n");
-	printf("This graph ");
+	printf("This matrix ");
 	if (k == TRAIL) printf("is an Eulerian trail.\n");
 	else if (k == CIRCUIT) printf("is an Eulerian circuit.\n");
 	else if (k == NORMAL) printf("is neither an Eulerian trail nor an Eulerian circuit.\n");
