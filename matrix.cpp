@@ -36,17 +36,17 @@ class MT {
 		void newEdge_lr(int x,int y,string i) { 
 			is_on = true; 
 			(matrix[x][y].connection)++; 
-			matrix[x][y].weight = i;
+			matrix[x][y].weight += (i + " ");
 			edges++; 
 		}
 		void newEdge_bi(int x,int y,string i) {
 			is_bi = true;
 			(matrix[x][y].connection)++;
-			matrix[x][y].weight = i;
+			matrix[x][y].weight += (i + " ");
 			//Only for bi-directional graphs
 			(matrix[y][x].connection)++;
-			matrix[y][x].weight = i;
-			edges+=2;
+			matrix[y][x].weight += (i + " ");
+			edges += 2;
 		}
 		void out(){
 			cout << "ADJACENCY MATRIX (CONNECTIONS)" << endl;
@@ -73,6 +73,18 @@ class MT {
 			else if (linkedTest()) return LINKEDLIST;
 			else if (is_on and edges == (nodes - 1)) return TREE;
 			else return GRAPH;
+		}
+		void outArray(){
+			for (int x = 0;x < nodes;x++) cout << x << " ";
+			cout << endl;
+			for (int x = 0;x < nodes;x++) cout << matrix[x][0].weight << " ";
+			cout << endl;
+		}
+		void outLinkedList(){
+			for (int x = 0;x < nodes - 1;x++) cout << x << " -> ";
+			cout << "END" << endl;
+			for (int x = 0;x < nodes - 1;x++) cout << matrix[x][x + 1].weight << "-> ";
+			cout << "END" << endl;
 		}
 		void DFS(int x){
 			visited[x] = true;
@@ -109,19 +121,15 @@ class MT {
 				if (number % 2 == 0) even++;
 				else odd++;
 			}
-			if (odd == 0){ return CIRCUIT; }
-			else if (odd > 0){
-				if (odd == 2) return TRAIL;
-			}
+			if (odd == 0) return CIRCUIT; 
+			else if (odd == 2) return TRAIL;
 			return NORMAL;
 		}
 };
 
-int main()
-{
+void interface(){
 	int n;
-	cout << "Matrix" << endl;
-	cout << "Enter your number of nodes: ";
+	cout << "Enter a designated number of nodes: ";
 	cin >> n;
 	MT example(n);
 	char selection;
@@ -153,10 +161,16 @@ int main()
 	example.out();
 	enum STATUS result = example.checkMatrixStatus();
 	cout << "This matrix ";
-	if (result == ARRAY) cout << "represents an array." << endl; 
-	else if (result == LINKEDLIST) cout << "represents a linked list." << endl; 
+	if (result == ARRAY) {
+		cout << "represents an array." << endl << "Output:" << endl;
+		example.outArray();
+	}	
+	else if (result == LINKEDLIST) {
+	       	cout << "represents a linked list." << endl << "Output:" << endl;
+		example.outLinkedList();
+	}	
 	else if (result == TREE) { 
-		cout << "represents a tree." << endl << "DFS: ";
+		cout << "represents a tree." << endl << "Output with pre-order DFS: ";
 		example.DFS(0);	
 		cout << endl << "This tree ";
 		enum TREE_STATUS t = example.checkTreeStatus();
@@ -171,9 +185,14 @@ int main()
 		if (c == COMPLETE) cout << "is complete." << endl;
 		else cout << "is not complete." << endl;
 		cout << "This graph ";
-		if (k == TRAIL) cout << "is an Euler trail." << endl;
-		else if (k == CIRCUIT) cout << "is an Euler circuit." << endl;
-		else if (k == NORMAL) cout << "is neither an Euler trail nor an Euler circuit." << endl;
+		if (k == TRAIL) cout << "is an Eulerian trail." << endl;
+		else if (k == CIRCUIT) cout << "is an Eulerian circuit." << endl;
+		else if (k == NORMAL) cout << "is neither an Eulerian trail nor an Eulerian circuit." << endl;
 	}
+}
+
+int main()
+{
+	interface();
 	return 0;
 }
