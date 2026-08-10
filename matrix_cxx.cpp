@@ -42,10 +42,9 @@ class MT {
 		void newEdge_bi(int x,int y,string i) {
 			is_bi = true;
 			(matrix[x][y].connection)++;
-			matrix[x][y].weight += (i + " ");
-			//Only for bi-directional graphs
+			matrix[x][y].weight = i;
 			(matrix[y][x].connection)++;
-			matrix[y][x].weight += (i + " ");
+			matrix[y][x].weight = i;
 			edges += 2;
 		}
 		void out(){
@@ -83,7 +82,7 @@ class MT {
 		void outLinkedList(){
 			for (int x = 0;x < nodes - 1;x++) cout << x << " -> ";
 			cout << "END" << endl;
-			for (int x = 0;x < nodes - 1;x++) cout << matrix[x][x + 1].weight << "-> ";
+			for (int x = 0;x < nodes - 1;x++) cout << matrix[x][x + 1].weight << " -> ";
 			cout << "END" << endl;
 		}
 		void DFS(int x){
