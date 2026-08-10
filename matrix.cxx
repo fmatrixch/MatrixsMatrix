@@ -6,7 +6,7 @@ using namespace std;
 //Must be compiled with a C++-compatible compiler; use of struct as class in C is strictly prohibited.
 
 struct Mapping { int connection; char* weight; };
-enum STATUS { ARRAY,LINKEDLIST,TREE,GRAPH };
+enum STATUS { ARRAY = 1,LINKEDLIST = 2,TREE = 4,GRAPH = 8 };
 enum TREE_STATUS { COMP,INCO };
 enum GRAPH_STATUS_COMPLETE { COMPLETE,INCOMPLETE };
 enum GRAPH_STATUS_KONIGSBERG { TRAIL,CIRCUIT,NORMAL };
@@ -88,18 +88,21 @@ struct MT {
 			}
 		}
 		bool linkedTest(){
-			if ((is_array || is_bi) && (!is_on)) return false;
-			if (edges != (nodes - 1)) return false;
+			if (is_array) return false;
+			int check = is_bi ? (2*(nodes - 1)) : (nodes - 1);
+			if (edges != check) return false;
 			for (int x = 0;x < nodes - 1;x++){
 				if ((matrix[x][x + 1].connection) != 1) return false;
 			}
 			return true;
 		}
-		enum STATUS checkMatrixStatus(){
-			if (is_array) return ARRAY;
-			else if (linkedTest()) return LINKEDLIST;
-			else if ((!linkedTest()) && (edges == (nodes - 1))) return TREE;
-			else return GRAPH;
+		int checkMatrixStatus(){
+			int result = 0;
+			if (is_array) result |= ARRAY;
+			if (linkedTest()) result |=  LINKEDLIST;
+			if ((is_on) && (edges == (nodes - 1))) result |= TREE;
+			if (result == 0) result |= GRAPH;
+			return result;
 		}
 		void outArray(){
 			for (int x = 0;x < nodes;x++) printf("%d ",x);
@@ -111,11 +114,11 @@ struct MT {
 			printf("\n");
 		}
 		void outLinkedList(){
-			for (int x = 0;x < nodes - 1;x++) printf("%d -> ",x);
+			for (int x = 0;x < nodes - 1;x++) printf("%d - ",x);
 			printf("END\n");
 			for (int x = 0;x < nodes - 1;x++) { 
-				if (matrix[x][x + 1].weight != NULL) printf("%s -> ",matrix[x][x + 1].weight);
-				else printf(" -> ");
+				if (matrix[x][x + 1].weight != NULL) printf("%s - ",matrix[x][x + 1].weight);
+				else printf(" - ");
 		       	}
 			printf("END\n");
 		}
@@ -140,16 +143,17 @@ struct MT {
 			return COMP;
 		}
 		enum GRAPH_STATUS_COMPLETE checkGraphStatusComplete(){
-			if (is_on) { if (edges == (nodes * (nodes - 1))) return COMPLETE; }
-			if (edges == ((nodes * (nodes - 1)) / 2)) return COMPLETE;
+			if (is_bi) { if (edges == (nodes * (nodes - 1))) return COMPLETE; }
+			else { if (edges == ((nodes * (nodes - 1)) / 2)) return COMPLETE; }
 			return INCOMPLETE;
 		}
 		enum GRAPH_STATUS_KONIGSBERG checkGraphStatusKonigsberg(){
 			int odd = 0, even = 0;
 			for (int x = 0;x < nodes;x++){
 				int number = 0;
-				for (int y = 0;y < nodes;y++){
-					if ((matrix[x][y]).connection > 0) number+=(matrix[x][y].connection);
+				for (int y = 0;y < nodes;y++) {
+				       	number+=(matrix[x][y].connection);
+			       		if (!is_bi) number+=(matrix[y][x].connection);	
 				}
 				if (number % 2 == 0) even++;
 				else odd++;
@@ -196,36 +200,33 @@ void interface(){
 	else { printf("Jumped input. \nYour matrix won't have any edge.\n"); example.markArray(); }
 	printf("Complete matrix: \n");
 	example.out();
-	enum STATUS result = example.checkMatrixStatus();
-	printf("This matrix ");
-	if (result == ARRAY) {
-		printf("represents an array.\nOutput:\n");
+	int result = example.checkMatrixStatus();
+	if (result & ARRAY) {
+		printf("This matrix represents an array.\nOutput:\n");
 		example.outArray();
 	}	
-	else if (result == LINKEDLIST) {
-	       	printf("represents a linked list.\nOutput:\n");
+	if (result & LINKEDLIST) {
+	       	printf("This matrix represents a linked list.\nOutput:\n");
 		example.outLinkedList();
 	}	
-	else if (result == TREE) { 
-		printf("represents a tree.\nOutput with pre-order DFS: ");
+	if (result & TREE) { 
+		printf("This matrix represents a tree.\nOutput with pre-order DFS: ");
 		example.DFS(0);	
 		printf("\nThis tree ");
 		enum TREE_STATUS t = example.checkTreeStatus();
 		if (t == COMP) printf("is complete.\n");
 		else printf("is not complete.\n");
 	}
-	else if (result == GRAPH){
-	       	printf("represents a graph.\n"); 
-		enum GRAPH_STATUS_COMPLETE c = example.checkGraphStatusComplete();
-		enum GRAPH_STATUS_KONIGSBERG k = example.checkGraphStatusKonigsberg();
-		printf("This graph ");
-		if (c == COMPLETE) printf("is complete.\n");
-		else printf("is not complete.\n");
-		printf("This graph ");
-		if (k == TRAIL) printf("is an Eulerian trail.\n");
-		else if (k == CIRCUIT) printf("is an Eulerian circuit.\n");
-		else if (k == NORMAL) printf("is neither an Eulerian trail nor an Eulerian circuit.\n");
-	}
+	if (result & GRAPH) printf("This matrix represents a graph.\n"); 
+	enum GRAPH_STATUS_COMPLETE c = example.checkGraphStatusComplete();
+	enum GRAPH_STATUS_KONIGSBERG k = example.checkGraphStatusKonigsberg();
+	printf("This graph ");
+	if (c == COMPLETE) printf("is complete.\n");
+	else printf("is not complete.\n");
+	printf("This graph ");
+	if (k == TRAIL) printf("is an Eulerian trail.\n");
+	else if (k == CIRCUIT) printf("is an Eulerian circuit.\n");
+	else if (k == NORMAL) printf("is neither an Eulerian trail nor an Eulerian circuit.\n");
 }
 
 int main()
