@@ -1,10 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 using namespace std;
 
-//C-style version. Must be compiled with a C++-compatible compiler; use of struct as class in C is strictly prohibited.
+//Must be compiled with a C++-compatible compiler; use of struct as class in C is strictly prohibited.
 
 struct Mapping { int connection; char* weight; };
 enum STATUS { ARRAY,LINKEDLIST,TREE,GRAPH };
@@ -99,7 +98,7 @@ struct MT {
 		enum STATUS checkMatrixStatus(){
 			if (is_array) return ARRAY;
 			else if (linkedTest()) return LINKEDLIST;
-			else if (is_on && edges == (nodes - 1)) return TREE;
+			else if ((!linkedTest()) && (edges == (nodes - 1))) return TREE;
 			else return GRAPH;
 		}
 		void outArray(){
@@ -141,7 +140,7 @@ struct MT {
 			return COMP;
 		}
 		enum GRAPH_STATUS_COMPLETE checkGraphStatusComplete(){
-			if (is_bi) { if (edges == (nodes * (nodes - 1))) return COMPLETE; }
+			if (is_on) { if (edges == (nodes * (nodes - 1))) return COMPLETE; }
 			if (edges == ((nodes * (nodes - 1)) / 2)) return COMPLETE;
 			return INCOMPLETE;
 		}
